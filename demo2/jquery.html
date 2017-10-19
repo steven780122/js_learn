@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JQuery</title>
+    <script src="jquery-3.2.1.min.js"></script>
+    <script>
+        // $(document).ready(function(){   // 測試jquery可以用
+        //     alert("Hello JQuery");
+        // });    
+    </script>
+
+    <script>
+
+        // HTML靜態內容載入完成後，初始化程式
+        // 1. 在window物件上註冊load事件
+        // 2. 利用Jquery的Ready事件   >> 之後會用 $(document).ready(function(){});
+
+
+        // window.onload=function(){    // 如果這樣不用按按鈕，立刻觸發
+        function change(){             // 按鈕才會觸發
+            // document.getElementById("title").innerHTML = "My Link";    //不用JQuery的寫法
+            let jqueryObj = $("#title");
+            // 修改內文
+            jqueryObj.html("My link"); 
+            // 修改   css樣式
+            $("a").css("color", "red");
+            // 修改html屬性   
+            $(".extlink").attr("target", "_blank").css("text-decoration", "line-through");    // 可以x連續設定
+            // 展示階層選擇器
+            $("#movies>li").css("font-weight", "bold");
+            $("#movies").fadeOut();   // 很厲害! 會消失
+
+
+
+            // 若原本用原生抓取物件，仍可以用jquery
+            // let title = document.getElementById("title");
+            // $(title).fadeOut();
+        };
+
+
+        
+
+
+                    
+    
+    </script>
+
+</head>
+<body>
+    <h3 id="title">My Favorite</h3>
+    <ul id="links">
+        <li><a class="extlink" href="http://www.google.com">Google</a></li>
+        <li><a class="extlink" href="http://www.facebook.com">Facebook</a></li>
+        <li><a href="http://www.apple.com">Apple</a></li>
+    </ul>
+
+    <h3>My Movies</h3>
+    <ul id="movies">
+        <li>神鬼戰士</li>
+        <li>環太平洋2</li>
+    </ul>
+
+
+
+    <button onclick="change();">Click</button>
+
+</body>
+</html>
