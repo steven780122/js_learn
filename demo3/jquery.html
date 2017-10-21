@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Jquery</title>
+
+    <style type="text/css">
+        .content{
+            text-decoration: underline
+        }
+
+        .key{
+            font-weight: bold;
+            background-color: red;
+        }
+    </style>
+    
+    <script src="./jquery-3.2.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // 在按鈕上註冊click事件
+            // $("#btn").click(事件處理函式);
+            $("#btn").click(function(){    //直接使用匿名函式
+                // alert(this);
+                // this;   //在事件處理函式中的this，代表觸發事件的物件!!!!! (此為原生的button標籤，而不是jquery物件!)  可以用alert(this看到)
+                $(this).fadeOut();   // 就會發現button標籤會消失!
+
+
+                // $(".content").addClass("key")
+                $(".content").toggleClass("key")     // 這樣就可以切換了!! (每次都在有key 或沒有 key做切換!)
+
+            });
+
+
+        });
+    </script>
+
+</head>
+<body>
+    <button id="btn">Click</button>
+    <div class="content">Jquery is a good library</div>
+    
+</body>
+</html>

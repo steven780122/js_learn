@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Jquery</title>
+
+    <style type="text/css">
+    .menu{
+        margin-bottom: 10px;    /*讓每個選單都有一點距離XD*/
+    }
+    
+    .menu>.title{             /*盡量用階層選擇，才不會跟其他互衝!*/
+        font-weight: bold;
+    }
+
+    .menu>.items{             /*預期把items內縮!*/
+        margin-left: 20px; 
+    }
+    
+    </style>
+    <link rel="stylesheet" href="./chosen.min.css">
+    
+    <script src="./jquery-3.2.1.min.js"></script>     <!-- 這個要在最上面，因為順序會有問題!!!!! 主要套件在上 -->
+    <script src="./chosen.jquery.min.js"></script>    <!-- 在下方body寫一個下拉式選單試試吧 -->
+
+
+    <script>
+        // After HTML DOM Ready - 在HTML DOM準備好後觸發
+
+        $(document).ready(function(){
+            $("#gender").chosen();
+
+
+
+            // 使用者點擊title要有動作
+            $(".menu>.title").on("click", function(){
+                // $(this).next().toggle();    
+                // next就指到items，toggle就可以隱藏/回復
+                // $(this).next().fadeToggle();      // 淡入按出
+                //  $(this).next().slideToggle();   // 用slide方式滑進滑出
+
+
+                $(this).animate({opacity: 0.5}, 1000)   //讓點選到的menu>title透明化
+                let $items = $(this).next();    // Jquery 物件，所以習慣命名為$xxx
+                // alert($items.attr("data-hiddable"));
+
+                if($items.attr("data-hiddable") != "false"){
+                    $items.slideToggle({
+                        complete: function(){
+                            alert("Completed!");
+                        }
+                    });     //  不屬於子選單的就可以點擊隱藏，結束後alert
+                }
+
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+    <select id='gender'>
+        <option>性別</option>
+        <option>男</option>
+        <option>女</option>
+    </select>
+
+
+
+
+    <div class="menu">
+        <div class="title">選單1</div>
+        <div class="items">
+            <div class="item">選項1-1</div>
+            <div class="item">選項1-2</div>
+            <div class="item">
+                    <div class="menu">   
+                            <div class="title">選單1-2</div>
+                            <div class="items"  data-hiddable="false">   <!-- 目的: 子選單不可以被隱藏的話 -->
+                                <div class="item">選項1-2-1</div>
+                                <div class="item">選項1-2-2</div>
+                            </div>
+                    </div>
+            
+            </div>
+        </div>
+    </div>
+
+    <div class="menu">
+            <div class="title">選單2</div>
+            <div class="items">
+                <div class="item">選項2-1</div>
+                <div class="item">選項2-2</div>
+            </div>
+    </div>
+
+
+
+
+</body>
+</html>
