@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JQuery Mobile</title>
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    
+</head>
+<body>
+
+        <div data-role="page" id="home">
+            <div data-role="header">
+                <h1>這是標頭</h1>
+            
+            </div>
+            <div role="main" class="ui-content">
+                前往<a href="#content">內容頁</a>
+            </div>
+            <div data-role="footer">
+                <h4>這是結尾</h4>
+            </div>
+        </div>
+
+        <div data-role="page" id="content">
+                <div data-role="header">
+                    <h1>這是標頭</h1>
+                
+                </div>
+                <div role="main" class="ui-content">
+                    這是內容，<a href="#home">返回</a>
+                </div>
+                <div data-role="footer">
+                    <h4>這是結尾</h4>
+                </div>
+            </div>
+
+        <!-- <a href="#" class="ui-btn">Anchor</a>
+        <button class="ui-btn">Button</button> -->
+    
+
+
+        <!-- <ul data-role="listview" data-filter="true" data-filter-placeholder="Search fruits..." data-inset="true">
+                    <li><a href="#">Apple</a></li>
+                    <li><a href="#">Banana</a></li>
+                    <li><a href="#">Cherry</a></li>
+                    <li><a href="#">Cranberry</a></li>
+                    <li><a href="#">Grape</a></li>
+                    <li><a href="#">Orange</a></li>
+                </ul> -->
+</body>
+</html>
