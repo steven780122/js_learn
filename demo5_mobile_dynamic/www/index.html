@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Movie</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <script>
+        function getData(name){
+            // let src = "../docs/" + name + ".html";     // 會有問題!!  因為是指在localhost上一層>>  所以我們把docs搬到www內
+
+            let src = "docs/" + name + ".html";   
+            let req = new XMLHttpRequest(); // 建立XMLHttpRequest物件，用來和伺服器連線
+            req.open("get", src);   //設定連線方法、連線網址
+            req.onload = function(){    //load事件代表連線完成
+                // alert(this.responseText);
+                // 展示伺服器回應
+                $('#article').html(this.responseText)
+
+            };
+            req.send();   // 送出連線
+
+            $("#article").html("Loading...")
+        }
+    
+    </script>
+</head>
+<body>
+        <div data-role="page" id="home">
+                <div data-role="header">
+                    <h1>最新電影</h1>
+                
+                </div>
+                <div role="main" class="ui-content">
+                    <!-- <p>最新電影列表</p> -->
+                    <ul data-role="listview">
+                        <!-- 記得要在自己寫getData!!! -->
+                            <li><a onclick="getData('ring');" href="#content">魔界</a></li>           
+                            <li><a onclick="getData('gladiator');" href="#content">神鬼</a></li>
+                            <li><a onclick="getData('phor');"href="#content">雷神索爾</a></li>
+                    </ul>
+                </div>
+                <div data-role="footer">
+                    <h4>聯絡我們</h4>
+                </div>
+        </div>
+
+        <div data-role="page" id="content">
+                <div data-role="header">
+                    <h1>最新電影</h1>
+                
+                </div>
+
+                <div role="main" class="ui-content">
+                        <div id="article"></div>
+                        <div><a href="#home">返回</a></div>
+                    </div>
+                
+                <div data-role="footer">
+                    <h4>聯絡我們</h4>
+                </div>
+        </div>
+    
+</body>
+</html>
+
+
+
+
+
+<!-- <h1>My Homepage</h1>
+<img src="landscape.jpeg" /> -->

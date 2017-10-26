@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <!-- 理解Jquery Pages必須要做的事 -->
+    <!-- 初期CSS會把他們都隱藏 -->
+    <style type="text/css">
+        .page{display: none}    
+    </style>
+
+    <script>
+        window.onload=function(){
+            showPage(window.location.hash);
+        };
+
+        window.addEventListener("hashchange", function(){
+            // console.log(window.location.hash);   //  使用者連到我們的網頁就會記錄下來!  這就是原理!!!!
+            showPage(window.location.hash)
+        });
+        
+        let page = null;  // 記錄當前的頁面，初始資料是沒有資料
+        function showPage(hash){
+            // 把當前的頁面藏起來
+            if(page != null){
+                page.style.display="none";
+            }
+            // 根據hash(#id)，把新頁面秀出來
+            let pageId;
+            if(hash){
+                pageId = hash.substring(1);
+            }else{    //沒有hash，預設到home
+                pageId = "home";
+            }
+
+            // page = $("#" + pageId).fadeIn();   // not yet
+            // page = document.getElementById(pageId);
+            // page.style.display = "block";
+        }
+    
+    </script>
+
+    <title>Pages</title>
+    <!-- 目標，理解mobile 上一個轉換的頁面(Page)樣式如何實現 -->
+</head>
+<body>
+    <div class="page" id="home">
+        Home, <a href="#content">go Content</a>
+
+    </div>
+
+    <div class="page" id="content">
+        Content, <a href="#home">back Home</a>
+    </div>
+    
+</body>
+</html>
