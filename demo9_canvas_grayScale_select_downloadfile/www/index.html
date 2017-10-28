@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Photo Editor</title>
+
+    <script>
+        let ctx;
+        window.onload = function(){
+            ctx = document.getElementById("cvs").getContext("2d"); // 一個canvas會對應一個內容物件(畫圖都是利用此內容Context物件)   2d, webgl很複雜 (3d)
+            loadImage("landscape.jpeg");
+            
+            
+            // let img = new Image();
+            // img.src = "landscape.jpeg";
+            // img.onload = function(){
+            //     ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            // }; 
+        };
+          
+        function grayscale(){
+            let pixels = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+            let data = pixels.data;
+
+            for(let i = 0; i < data.length; i+=4){
+                // data[i] = 0;    // 複習: 把紅色去掉!
+                let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg;
+                data[i + 1] = avg;
+                data[i + 2] = avg;
+            }
+            ctx.putImageData(pixels, 0, 0);
+        }
+
+        function loadFile(input){
+            let file = input.files[0];    // files[0] 是因為可以多選
+            // console.log(file);   // 可以在前端黨，不要在後端擋!!!
+            let src = URL.createObjectURL(file);   // 這樣本機端的圖片就有了browser管理的路徑了!!
+            loadImage(src);
+            // alert(src)
+            // 仔入圖片
+            // let img = new Image();    // 這樣在用上面的方法就可以在server上看到!
+            // img.src = src;
+            // img.onload = function(){
+            //     ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            // }; 
+
+        }
+
+        function loadImage(src){
+            let img = new Image();    // 這樣在用上面的方法就可以在server上看到!
+            img.src = src;
+            img.onload = function(){
+                ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            }; 
+        }
+
+        // 利用程式去點擊他!!!!
+        function pickFile(){
+            let input = document.getElementById("file");
+            input.click();   // 用程式去點擊這個元件
+        }
+    
+        // for download:
+        function downloadFile(){
+            ctx.canvas.toBlob(function(blob){    // 可看toBlob內建匿名函式的參數
+                let src = ctx.canvas.toDataURL(blob);   // 遇到大圖因為URL太長，browser可能吃不下會有問題所以改成用toBlob 多包一層!
+                let link = document.getElementById("download");
+                link.download = "檔名.jpg";  
+                link.href = src;
+                link.click();
+            });
+
+            // 以下版本是可以用，但當遇到大圖可能會有問題!
+            // let src = ctx.canvas.toDataURL();   // 遇到大圖因為URL太長，browser可能吃不下會有問題所以改成用toBlob 多包一層!
+            // alert(src);
+            // let link = document.getElementById("download");
+            // link.download = "檔名.jpg";  
+            // // link.href = "landscape.jpeg";    //這href要改為canvas的啊!!
+            // link.href = src;
+            // link.click();
+        }
+
+
+
+        // 以下是toBlob callBack概念!
+        let data = {
+            n1: 1, n2: 2,   // 
+            changeN1: function(n1){
+                this.n1 = n1;
+                return this;
+            },
+            add: function(callback){
+                callback(this.n1 + this.n2);
+            }
+        }
+
+        data.changeN1(5).add(function(result){    // 類似toBlob的概念
+            alert(result);
+        });
+        
+    </script>
+
+</head>
+<body>
+    <!-- 因為介面太醜預設值，可是透過本機去選檔案一定要寫這個...!  我們先藏起來  但給原生地fileinput一個id -->
+    <input type="file" onchange="loadFile(this);" id="file" style="display:none">  <!-- // change事件代表使用者選了檔案 -->   
+
+    <!-- 來自己做吧XD -->
+    <button onclick="pickFile();">讀取檔案</button>
+    <button onclick="downloadFile();">下載檔案</button>
+    <!-- 下載檔案html5就是為了web app存在!!!!  有超連結的新特性>>  給他download特性-->
+    <!-- <a download="landscape.jpeg" href="landscape.jpeg">下載檔案</a> -->
+    <!-- 改寫download如下 ，依樣去寫一個function去見接操作該超連結!-->
+    <a id="download"></a>
+
+
+ 
+    <button onclick="grayscale();">Grayscale</button><br>
+
+    <canvas id="cvs" width="600" height="450" style="border:1px solid black"></canvas>
+    
+</body>
+</html>
