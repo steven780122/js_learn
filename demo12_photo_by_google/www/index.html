@@ -115,7 +115,7 @@ function openFile(){
         // .enableFeature(google.picker.Feature.NAV_HIDDEN)   // 開啟功能:瀏覽輛藏起來不要好了..
         // .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)   // 可以多選，這裡影像先單選就好不要
         // .setAppId(appId)   // appId 就是專案ID (上方CLIENT-ID前面的專案ID 674608619453)
-        .setAppId("674608619453")   // appId 就是專案ID (上方CLIENT-ID前面的專案ID 674608619453)
+        .setAppId("674608619453")   // appId 就是專案ID (上方CLIENT-ID前面的專案ID 674608619453   其實去google cloud platform上面的ˊ專案ID或專案編號都可以!)
         .setOAuthToken(auth.currentUser.get().getAuthResponse().access_token)   // oauthToken: 授權完發現你是一個有被授權的人，為了讓之後能認得你是誰發了token給你(暫時的token)
         .addView(view)        // 建立上面那個view
         .addView(new google.picker.DocsUploadView())   // 建立上傳的view (幫我們寫好就不用煩惱啦!) 
@@ -139,9 +139,59 @@ function pickerCallback(data) {
 
 
   function downloadFile(fileId){
+    // 稍微複雜  須看google drive API (FILE)
+    let token = auth.currentUser.get().getAuthResponse().access_token
+    let req = new XMLHttpRequest;
+    // 做連線的設定
+    req.open("GET", "https://www.googleapis.com/drive/v3/files/" + fileId + "?alt=media")    // 如果直接貼網址到瀏覽器會發現顯示沒有權限!!!  所以要帶有權限(用header)! 但我們要檔案內容不是檔案資訊!
+    req.setRequestHeader("Authorization", "Bearer " + token);
+    req.responseType = "arraybuffer";  // 設定回應資料的型態為ArrayBuffer物件(設定就是卡死的array buffer物件，所以後面要用Blob)
+    req.onload = function(){
+        // 可搜尋: ArrayBuffer to blob (上次有講過大圖的資訊過大可能需經Blob!!)
+        // alert(this.responseText);
+        let response = this.response;   // ArrayBuffer物件
+        let blob = new Blob([response]);
+        let src = URL.createObjectURL(blob);
+        loadImage(src);
+        
+    };
+    // 送出連線
+    req.send();
+  }
 
-    // 稍微複雜..........   下次再來!!!
+  function saveFile(){
+    //   以下是為連線做準備
+      let token = auth.currentUser.get().getAuthResponse().access_token;
+      let myBoundary = "boundry_my_own";
 
+      console.log(cvs.toDataURL("image/jpeg"));  
+      let base64Data = cvs.toDataURL("image/jpeg").replace("data:image/jpeg;base64,", "");
+
+        // 同學說:   可以用ES6的模板語言啊!!  用``包起來
+      let body = "--" + myBoundary + "\r\n" +    //  \r\n是換行  一定要這麼寫
+                 "Content-Type: application/json; charset=UTF-8\r\n\r\n" +    //  看文件因為換2行  所以2組\r\n 
+                 "{\"name\":\"test.jpg\"}\r\n\r\n" + 
+                 "--" + myBoundary + "\r\n" +
+                 "Content-Type: image/jpeg\r\n" +
+                 "Content-Transfer-Encoding: base64\r\n\r\n" +   // 內容傳送的編碼(彭: 不知道為啥google拿掉了
+                 base64Data + "\r\n" +
+                 "--" + myBoundary + "--";
+
+
+
+    //   以下是開始進行連線
+      let req = new XMLHttpRequest;
+      req.open("POST", "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
+      req.setRequestHeader("Authorization", "Bearer " + token);
+      req.setRequestHeader("Content-type", "multipart/related; boundary=" + myBoundary)   // 因為你送出資料了，當然就要告訴人家你內容是什麼!!! 所以要設定content-type
+      //   上一行的boundary(邊界)=foo_bar_baz(切割點   自己定名，只要前後文要相同)  只切成很多部分:  
+      
+      req.onload = function(){
+        alert("OK");
+      };
+      
+      
+      req.send(body);   //送出的資料
   }
 
 
@@ -162,7 +212,8 @@ onreadystatechange="if (this.readyState === 'complete') this.onload()">
     <div>
         
         <button onclick="openFile();">Open File</button>
-		<button onclick="invert();">Invert</button>
+        <button onclick="invert();">Invert</button>
+        <button onclick="saveFile();">Save File</button>
 	</div>
 	<canvas id="cvs" width="600" height="450"
 		style="border:1px solid black"></canvas>
