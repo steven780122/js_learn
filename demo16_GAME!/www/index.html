@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Training 99</title>
+
+    <script>
+    
+    let ga = {
+        audio: null,
+        sounds:{},
+        res:{   // 因為一定要保證影像身音載入完成!!!
+            imgs:{explosion: "imgs/particle-explosion.png", plane: "imgs/plane.png"},    //影像列表
+            sounds:{explosion: "sounds/sound-explosion.mp3", bullet: "sounds/sound-bullet.mp3"},  // 聲音列表
+            loaded: 0,
+            total:4                 //這裡先寫死，一班可以後端去撈      
+        }
+
+
+    };   // 如果預期程式大，讓全域變數只有一個!
+
+    window.addEventListener("load", function(){
+        ga.audio = new AudioContext;
+        ga.loadResources();   // 載入所有
+
+    });
+    
+    ga.loadResources = function(){   // 把全部載入行為包在ga內   (當然也是可以直接寫在ga內! 但會怕一大包!!!!!)
+        ga.loadImages();
+        ga.loadSounds();
+    }
+
+        ga.loadImages = function(){   //彭: 他習慣因為只在loadResources用，所以縮排
+            // 找出物件中的每個成員
+            for(let name in ga.res.imgs){
+                // alert(name + ":" + ga.res.imgs[name])
+                ga.loadImage(name, ga.res.imgs[name])
+            }
+        }
+
+        ga.loadImage = function(name, src){   // 單張圖片的載入
+            let img = new Image();
+            img.src = src;
+            img.onload = function(){
+                // 圖片載入完成
+                ga.res.imgs[name] = this;   // 載入完從原本字串變物件
+            }
+        }
+
+        ga.loadSounds = function(){   //彭: 他習慣因為只在loadResources用，所以縮排
+            // 找出物件中的每個成員
+            for(let name in ga.res.sounds){
+                // alert(name + ":" + ga.res.imgs[name])
+                ga.loadSound(name, ga.res.sounds[name])
+            }
+        }
+
+        ga.loadSound = function(name, src){   // 單張圖片的載入
+            let req = new XMLHttpRequest();
+            req.open("get", src);
+            req.responseType = "arraybuffer";    
+            
+            req.onload = function(){
+                // 將檔案的資料解碼成AudioBuffer物件
+                // alert(this.response);
+                ga.audio.decodeAudioData(this.response, function(buffer){   // this.response:ArrayBuffer物件
+                // alert(buffer)
+                // sounds = buffer;
+                ga.sounds[name] = buffer;   // 為了讓sounds裡面的key是name，並可以用name的方式塞值 (變數可以帶入當key)
+                console.log(name);
+
+                // 這裡就是每一個載入完   所以要記錄
+                ga.res.loaded++;
+                if(ga.res.loaded >= ga.res.total){   // 表全部都載入完了
+                    console.log("Main");   
+                }
+
+                })
+            }
+            req.send();
+        }
+
+    </script>
+
+</head>
+<body>
+
+
+    <div id="loader"></div>
+    <div id="main" style="display:none">Main</div>
+    <div id="game" style="display:none">Game</div>
+    
+</body>
+</html>
