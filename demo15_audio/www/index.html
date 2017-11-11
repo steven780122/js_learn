@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Audio</title>
+
+  <script>
+    let audio;
+    let sounds;  // 把所有音效都放進這個物件
+
+    let total;   // 記錄派了幾個小弟出去
+    let loaded;  // 紀錄目前的狀態!
+
+    window.addEventListener("load", function(){
+      audio = new AudioContext;    // 整套的核心物件，所有Web的音效相關都和他有關
+      sounds = {};   // 記得初始化!
+
+      total = 3;
+      loaded = 0;
+
+      loadSound("kick");
+      loadSound("snare");
+      loadSound("hihat");
+      // console.log("Main")
+    });   //事先準備
+
+    function loadSound(name){
+      let req = new XMLHttpRequest();
+      req.open("get", "sounds/"+ name +".wav");
+      req.responseType = "arraybuffer";    
+      
+      req.onload = function(){
+        // 將檔案的資料解碼成AudioBuffer物件
+        // alert(this.response);
+        audio.decodeAudioData(this.response, function(buffer){   // this.response:ArrayBuffer物件
+          // alert(buffer)
+          // sounds = buffer;
+          sounds[name] = buffer;   // 為了讓sounds裡面的key是name，並可以用name的方式塞值 (變數可以帶入當key)
+          console.log(name);
+
+          // 這裡就是每一個載入完   所以要記錄
+          loaded++;
+          if(loaded >= total){   // 表全部都載入完了
+            console.log("Main");   
+          }
+
+        })
+      }
+      req.send();
+    }
+
+    function playSound(buffer /*要播放的AudioBuffer*/, time){
+      let source = audio.createBufferSource();
+
+      // 也可以新增改為多串一個node  作為調音拉等等的(看MDN)  (不一定要多串node  可以直接輸出也是當然沒問題的!)
+      let gain = audio.createGain();
+      // 例如關閉聲音:
+      // gain.gain.value = 0;
+
+
+      source.buffer = buffer;    // 往前是接檔案來源   // 往後是接下一
+      // source.connect(audio.destination);
+      source.connect(gain);
+      gain.connect(audio.destination);
+      source.start(time);   //播放!!!
+     }
+
+    function playMusic(){
+      // alert(audio.currentTime)    // audio context建立到現在過了多久(從音效環境建立到現在  就算都作時間還是依值往前run!  以秒為單位!!)
+      let startTime = audio.currentTime;
+      let unitTime = 0.25;
+
+      for(let bar = 0; bar < 2; bar++){
+          // 1, 5播放kick:
+        playSound(sounds.kick, startTime + 0 * unitTime);
+        playSound(sounds.kick, startTime + 4 * unitTime);
+
+        // 3, 7播放snare:
+        playSound(sounds.snare, startTime + 2 * unitTime);
+        playSound(sounds.snare, startTime + 6 * unitTime);
+
+        // 全部撥hihat:
+        for(let i = 0; i < 8; i++){
+          playSound(sounds.hihat, startTime + i * unitTime);
+        }
+
+        // 開始時間往後加8個單位  (否則撥過去時間會立刻撥!!!)
+        startTime += 8 * unitTime;
+      }     // 試著撥2個小節
+    
+      // // 1, 5播放kick:
+      // playSound(sounds.kick, startTime + 0 * unitTime);
+      // playSound(sounds.kick, startTime + 4 * unitTime);
+
+      // // 3, 7播放snare:
+      // playSound(sounds.snare, startTime + 2 * unitTime);
+      // playSound(sounds.snare, startTime + 6 * unitTime);
+
+      // // 全部撥hihat:
+      // for(let i = 0; i < 8; i++){
+      //   playSound(sounds.hihat, startTime + i * unitTime);
+      // }
+    }
+
+     
+  </script>
+</head>
+<body>
+  <h3>Hello Web Audio</h3>
+  <!-- <audio src="../sounds/kick.wav" autoplay></audio> -->     <!-- 複雜環境不能用 -->
+  <button onclick="playMusic();">Play</button>
+  
+</body>
+</html>
