@@ -15,9 +15,11 @@
         audio: null,
         lib: {},   // 類別那邊要用!  在libs.js定義   // 這邊因為順序問題，一定要先讓瀏覽器看到，lib.js那邊用才可以喔!
         evts:{},
-        data:{   // 遊戲中runtime的物件
+        data:{   // 遊戲中runtime的物件  
+            circle:0,    // 紀錄回合數的!!
             plane:null,  
-            drawables:null      // 此初始化是在啟動遊戲時(initGame)初始化!
+            drawables:null,      // 此初始化是在啟動遊戲時(initGame)初始化!
+            bulletSystem:null
         },
 
         keys:{left:false, top: false, right: false, bottom: false,
@@ -120,6 +122,16 @@
             }
         }
 
+
+        ga.playSound = function(buffer){
+            let source = ga.audio.creteBufferSource();
+            source.buffer = buffer;
+            source.connect(ga.audio.destination);
+            source.start();
+        }
+        //     Not Finish!!!!!!!!!!!!!!!!!!   // 記得看手機照片補完
+
+
         // 開啟主選單
         ga.initMain = function(){
             // 處理HTML DOM
@@ -141,9 +153,14 @@
 
             // 初始化遊戲資料 >>  這裡先給他一個陣列!
             ga.data.plane = new ga.lib.Plane()   // new了個飛機物件
+
+            ga.data.bulletSystem = new ga.lib.BulletSystem()
+
             ga.data.drawables = []
+            
             // 把初始後的plane放到drawables
             ga.data.drawables.push(ga.data.plane);
+            ga.data.drawables.push(ga.data.bulletSystem);
 
             // 正式啟動遊戲
             window.setInterval(ga.refreshGame, 20)   // 畫面更新
@@ -206,12 +223,46 @@
                 }
             }
 
+            // 確認爆炸!
+            let result = ga.checkExplosion();
+            if(result){
+                ga.gameOver();    // 再來放個聲音吧!!!
+            }
+        
             // 更新畫面
             ga.ctx.fillRect(0, 0, ga.ctx.canvas.width, ga.ctx.canvas.height);     //直接用黑色填滿就是清空了(因為是黑色背景)
             for(let i = 0; i < drawables.length; i++){
                 drawables[i].draw();
             }
+
+            ga.data.circle += 1;
         }
+
+
+    ga.checkExplosion = function(){
+        let bullets = ga.data.bulletSystem.bullets;
+        let plane = ga.data.plane;
+        let explosion = false;
+        let threshold = bullets[0].size + (plane.size / 2);
+
+
+        for(let i = 0; i < bullets.length; i++){
+            let distance = Math.sqrt(Math.pow(bullets[i].x - plane.x, 2) + Math.pow(bullets[i].y - plane.y, 2));  // 畢氏定理
+        }
+
+
+        if(distance < threshold){
+            explosion = true;
+            break;
+        }
+
+        return explosion
+    }
+
+    ga.gameOver = function(){
+        // 播放爆炸音效
+        ga.playSound(ga.res.sounds.explosion);
+    }
 
     </script>
     <script src="./lib.js"></script>   <!-- 乾脆放這裡，ga的後面使用的前面! -->
